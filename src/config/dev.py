@@ -11,7 +11,7 @@ class DevConfig(BaseConfig):
 
         # mongo
         self.MONGO_HOST = 'localhost'
-        self.MONGO_PORT = 22701
+        self.MONGO_PORT = 27017
         self.DB_USER = 'user'
         self.DB_PW = 'mongo'
         self.DB_NAME = 'scaffold_for_python'

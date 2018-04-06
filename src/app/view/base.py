@@ -19,6 +19,7 @@ def authorized():
             if payload.get("auth", False):
                 # the user is authorized.
                 # run the handler method and return the response
+                print("auth ok")
                 response = await func(request, payload, *args, **kwargs)
                 return response
             else:
