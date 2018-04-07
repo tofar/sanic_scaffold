@@ -10,7 +10,7 @@ class DevConfig(BaseConfig):
         self.DEBUG = True
 
         # mongo
-        self.MONGO_HOST = 'localhost'
+        self.MONGO_HOST = 'mongo'
         self.MONGO_PORT = 27017
         self.DB_USER = 'user'
         self.DB_PW = 'mongo'
