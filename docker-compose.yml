@@ -5,6 +5,7 @@ services:
         build: .
         volumes:
             - /etc/localtime:/etc/localtime:ro
+            - ./log:/app/log
         ports:
             - "3031:3031"
         environment:
