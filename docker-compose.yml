@@ -10,7 +10,7 @@ services:
         environment:
             - TZ=Asia/Shanghai
             - WEB_ENV=dev
-            - PORT=5678
+            - PORT=3031
             - HOST=0.0.0.0
         container_name: sanic_scaffold_app
         depends_on:
