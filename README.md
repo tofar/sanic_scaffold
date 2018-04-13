@@ -24,25 +24,25 @@ Running via command
 
   `curl -X GET http://localhost/api/v1/health`
 
-  返回：{"successful": True, "data": "healthy"}
+  返回：{"ret_code": int}
 
 + 测试register：
 
   `curl -H "Accept: application/json" -H "Content-type: application/json" -X POST http://localhost/api/v1/register -d '{"email": "example@gmail.com", "pw": "123456789", "nickname": "molscar" }'`
 
-  返回：{"successful": True}
+  返回：{"ret_code": int, "error_msg": "error_msg"}
 
 + 测试login:
 
   `curl -H "Accept: application/json" -H "Content-type: application/json" -X POST http://localhost/api/v1/login -d '{"email": "example@gmail.com", "pw": "123456789" }'`
 
-  返回：{"successful": True, "data": {"token": token, "user_info": {"nickname": nicknaame, "email": email}}}
+  返回：{"ret_code": int, "error_msg": "error_msg", "data": {"token": token, "user_info": {"nickname": nicknaame, "email": email}}}
 
 + 测试 add_email:
 
   `curl -H "Accept: application/json" -H "Content-type: application/json" -X POST http://localhost/api/v1/user/add_email -d '{"email": "add_email@gmail.com" }'`
 
-  返回：{ "successful": True, "data":  { "email_list": email_list} }
+  返回：{"ret_code": int, "error_msg": "error_msg", "data":  { "email_list": email_list} }
 
 
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    util.logUtil
+    app.model.log
     定义log操作工具
 """
 

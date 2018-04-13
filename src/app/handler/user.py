@@ -8,20 +8,28 @@ import bcrypt
 import jwt
 import bson
 from config import CONFIG
+from app.util.common import ret_json
+from app.model.ret_code import RetCode
+from app.model.ret_msg import RetMessage
+
 # collection为user的数据表
-user = DBModel("user").collection
-user_logger = Logger(dir_name="handler/user", file_name="app.handler.user")
+user_col = DBModel("user").collection
+user_logger = Logger(dir_name="app/handler/user", file_name="app.handler.user")
 
 
 def login(email, pw):
-    if match_mail(email) is None:
-        return {"successful": False, "error": "email is invalid."}
-    item = user.find_one(filter={"email": email})
+    if not match_mail(email):
+        user_logger.error(RetMessage.LACK_PARAMS)
+        return ret_json(
+            ret_code=RetCode.LACK_PARAMS, error_msg=RetMessage.LACK_PARAMS)
+
+    item = user_col.find_one(filter={"email": email})
 
     # 核对密码是否正确
-    if bcrypt.checkpw(pw.encode("utf-8"), item.get("pw")) is False:
-        user_logger.error("password is invalid")
-        return {"successful": False, "error": "password is invalid."}
+    if not bcrypt.checkpw(pw.encode("utf-8"), item.get("pw")):
+        user_logger.error(RetMessage.PW_ERROR)
+        return ret_json(
+            ret_code=RetCode.PW_ERROR, error_msg=RetMessage.PW_ERROR)
 
     token = jwt.encode(
         {
@@ -34,42 +42,46 @@ def login(email, pw):
     # 删除相应字段
     item.pop("pw")
     item.pop("_id")
-    return {"successful": True, "data": {"token": token, "user_info": item}}
+    return ret_json(
+        ret_code=RetCode.NO_ERROR, data={
+            "token": token,
+            "user_info": item
+        })
 
 
 def register(email, pw, nickname):
-    if match_mail(email) is None:
-        return {"successful": False, "error": "email is invalid."}
-    # if match_pw(pw) is None:
-    #     return {"successful": False, "error": "password is invalid."}
+    if not match_mail(email):
+        user_logger.error(RetMessage.LACK_PARAMS)
+        return ret_json(
+            ret_code=RetCode.LACK_PARAMS, error_msg=RetMessage.LACK_PARAMS)
     if not nickname:
-        user_logger.error("empty nickname")
-        return {"successful": False, "error": "empty nickname."}
+        user_logger.error(RetMessage.LACK_PARAMS)
+        return ret_json(
+            ret_code=RetCode.LACK_PARAMS, error_msg=RetMessage.LACK_PARAMS)
 
     email_list = [email]
     pw = bcrypt.hashpw(pw.encode("utf-8"), bcrypt.gensalt())
-    print(email_list)
-    print(email)
-    print(pw)
-    print(nickname)
-    result = user.insert_one({
+    result = user_col.insert_one({
         "email": email,
         "pw": pw,
         "nickname": nickname,
         "email_list": email_list
     })
     print(result.inserted_id)
-    return {"successful": True}
+    return ret_json(ret_code=RetCode.NO_ERROR)
 
 
 def add_email(user_id, email):
     if not user_id:
-        user_logger.error("user is invalid")
-        return {"successful": False, "error": "user is invalid."}
+        user_logger.error(RetMessage.LACK_PARAMS)
+        return ret_json(
+            ret_code=RetCode.LACK_PARAMS, error_msg=RetMessage.LACK_PARAMS)
     if match_mail(email) is None:
-        user_logger.error("email is invalid")
-        return {"successful": False, "error": "email is invalid."}
-    email_list = user.find_one_and_update(
+        user_logger.error(RetMessage.PARAMS_INVALID)
+        return ret_json(
+            ret_code=RetCode.PARAMS_INVALID,
+            error_msg=RetMessage.PARAMS_INVALID)
+    email_list = user_col.find_one_and_update(
         {
             "_id": bson.ObjectId(user_id)
         }, {"$push": {
@@ -77,9 +89,6 @@ def add_email(user_id, email):
         }},
         projection={"email_list": True},
         return_document=ReturnDocument.AFTER)
-    return {
-        "successful": True,
-        "data": {
-            "email_list": email_list["email_list"]
-        }
-    }
+    return ret_json(
+        ret_code=RetCode.NO_ERROR,
+        data={"email_list": email_list["email_list"]})

@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-    learn_docker:
+    web:
         build: .
         volumes:
             - /etc/localtime:/etc/localtime:ro
@@ -9,10 +9,14 @@ services:
             - "3031:3031"
         environment:
             - TZ=Asia/Shanghai
+            - WEB_ENV=dev
+            - PORT=5678
+            - HOST=0.0.0.0
         container_name: sanic_scaffold_app
         depends_on:
             - mongo
-        command: python -m sanic main.app --host=0.0.0.0 --port=3031 --workers=4
+        command: ["-m", "sanic", "main.app", "--host=0.0.0.0", "--port=3031", "--workers=4"]
+        entrypoint: ["python"]
     mongo:
         image: mongo:3.6.3
         expose:
