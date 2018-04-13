@@ -5,7 +5,7 @@ from sanic.response import json
 from app.handler.user import login
 from app.handler.user import register
 from app.handler.user import add_email
-from app.view.base import authorized
+from app.view.auth import authorized
 main = Blueprint("main")
 
 

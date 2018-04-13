@@ -18,3 +18,5 @@ class DevConfig(BaseConfig):
         # redis
         self.REDIS_HOST = 'localhost'
         self.REDIS_PORT = 6379
+
+        self.LOG_PATH = "/app/log/"

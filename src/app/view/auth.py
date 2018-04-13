@@ -3,8 +3,9 @@
 from functools import wraps
 from sanic.response import json
 from config import CONFIG
-
+from app.model.log import Logger
 import jwt
+auth = Logger(dir_name="view/auth", file_name="app.view.auth")
 
 
 def authorized():
@@ -23,6 +24,7 @@ def authorized():
                 response = await func(request, payload, *args, **kwargs)
                 return response
             else:
+                auth.error("not_authorized")
                 # the user is not authorized.
                 return json({'status': 'not_authorized'}, 403)
 

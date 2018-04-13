@@ -11,3 +11,5 @@ class BaseConfig(object):
 
         self.REDIS_PORT = 6379
         self.DEFAULT_HOST = 'localhost'
+
+        self.LOG_PATH = "/app/log/"

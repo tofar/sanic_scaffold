@@ -3,13 +3,14 @@
 from pymongo import ReturnDocument
 from app.model.db import DBModel
 from app.util.regex import match_mail
-# from app.util.regex import match_pw
+from app.model.log import Logger
 import bcrypt
 import jwt
 import bson
 from config import CONFIG
 # collection为user的数据表
 user = DBModel("user").collection
+user_logger = Logger(dir_name="handler/user", file_name="app.handler.user")
 
 
 def login(email, pw):
@@ -19,6 +20,7 @@ def login(email, pw):
 
     # 核对密码是否正确
     if bcrypt.checkpw(pw.encode("utf-8"), item.get("pw")) is False:
+        user_logger.error("password is invalid")
         return {"successful": False, "error": "password is invalid."}
 
     token = jwt.encode(
@@ -41,6 +43,7 @@ def register(email, pw, nickname):
     # if match_pw(pw) is None:
     #     return {"successful": False, "error": "password is invalid."}
     if not nickname:
+        user_logger.error("empty nickname")
         return {"successful": False, "error": "empty nickname."}
 
     email_list = [email]
@@ -61,8 +64,10 @@ def register(email, pw, nickname):
 
 def add_email(user_id, email):
     if not user_id:
+        user_logger.error("user is invalid")
         return {"successful": False, "error": "user is invalid."}
     if match_mail(email) is None:
+        user_logger.error("email is invalid")
         return {"successful": False, "error": "email is invalid."}
     email_list = user.find_one_and_update(
         {
